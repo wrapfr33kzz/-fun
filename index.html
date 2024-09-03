@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Girl Image</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f5f7fa;
+            font-family: 'Poppins', sans-serif;
+            transition: background-color 0.5s ease-in-out;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.4s ease;
+        }
+
+        .container:hover {
+            transform: scale(1.05);
+        }
+
+        .card {
+            max-width: 300px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .card img {
+            width: 100%;
+            border-radius: 15px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .card-info {
+            margin-top: 15px;
+            animation: fadeUp 0.7s ease;
+        }
+
+        .card-info p {
+            font-size: 18px;
+            margin: 5px 0;
+        }
+
+        .card-info .flag {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .card-info .flag img {
+            width: 25px;
+            height: auto;
+            margin-right: 10px;
+        }
+
+        button {
+            padding: 12px 24px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+            animation: bounce 1.5s infinite;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        button:focus {
+            outline: none;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* Responsive Design */
+        @media screen and (max-width: 768px) {
+            .container {
+                padding: 20px;
+                width: 100%;
+                margin: 0 10px;
+            }
+
+            .card {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="card">
+            <img id="girl-image" src="https://via.placeholder.com/300" alt="Girl Image">
+            <div class="card-info">
+                <p id="girl-name">Name: Random Girl</p>
+                <p id="girl-age">Age: 25</p>
+                <div class="flag">
+                    <img id="country-flag" src="https://via.placeholder.com/25" alt="Country Flag">
+                    <p id="girl-country">Country: Unknown</p>
+                </div>
+            </div>
+        </div>
+        <button id="generate-btn">Show Random Girl</button>
+        <button id="save-btn">Save Image</button>
+    </div>
+
+    <audio id="click-sound" src="click.mp3"></audio>
+
+    <script>
+        const clickSound = document.getElementById('click-sound');
+        const imageElement = document.getElementById('girl-image');
+        const nameElement = document.getElementById('girl-name');
+        const ageElement = document.getElementById('girl-age');
+        const countryElement = document.getElementById('girl-country');
+        const flagElement = document.getElementById('country-flag');
+        const saveButton = document.getElementById('save-btn');
+
+        // Fetch random female profile from RandomUser.me API
+        async function fetchRandomGirl() {
+            const response = await fetch('https://randomuser.me/api/?gender=female');
+            const data = await response.json();
+            const girl = data.results[0];
+            return {
+                imageUrl: girl.picture.large,
+                name: `${girl.name.first} ${girl.name.last}`,
+                age: girl.dob.age,
+                country: girl.location.country,
+                flagUrl: `https://flagcdn.com/48x36/${girl.nat.toLowerCase()}.png`
+            };
+        }
+
+        // Update UI with random girl image, name, age, and country
+        function updateUI(girl) {
+            imageElement.src = girl.imageUrl;
+            nameElement.textContent = `Name: ${girl.name}`;
+            ageElement.textContent = `Age: ${girl.age}`;
+            countryElement.textContent = `Country: ${girl.country}`;
+            flagElement.src = girl.flagUrl;
+        }
+
+        // Save the image
+        function saveImage(url) {
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'random-girl.jpg';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Event listener for button click
+        document.getElementById('generate-btn').addEventListener('click', async function () {
+            clickSound.play();
+            const girl = await fetchRandomGirl();
+            updateUI(girl);
+        });
+
+        // Event listener for saving the image
+        saveButton.addEventListener('click', function () {
+            saveImage(imageElement.src);
+        });
+    </script>
+
+</body>
+
+</html>
